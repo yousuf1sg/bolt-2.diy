@@ -1,10 +1,25 @@
 services:
   app-prod:
-    image: ghcr.io/yousuf1sg/bolt-2.diy:production# Must use full registry path
+    image: ghcr.io/yousuf1sg/bolt-2.diy:production  # Fixed: Added space after colon
     build:
       context: .
       dockerfile: Dockerfile
       target: bolt-ai-production
+    # Coolify-specific optimizations
+    labels:
+      - coolify.deploy=true  # Explicitly marks this as the deployable service
+    profiles: []  # Removes profile restrictions
+    deploy:
+      mode: replicated  # Ensures Coolify recognizes it as deployable
+
+  # Other services (app-dev, app-prebuild) can keep their profiles
+  app-dev:
+    profiles: ["development"]
+    # ... (rest of config)
+
+  app-prebuild:
+    profiles: ["prebuilt"] 
+    # ... (rest of config)
     environment:
       NODE_ENV: production
       NODE_OPTIONS: "--max-old-space-size=4096" # Critical for exit code 134
