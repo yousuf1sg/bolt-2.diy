@@ -1,24 +1,38 @@
+version: '3.8'  # Explicit version declaration (recommended)
+
 services:
   app-prod:
-    image: ghcr.io/yousuf1sg/bolt-2.diy:production  # Fixed: Added space after colon
+    image: ghcr.io/yousuf1sg/bolt-2.diy:production
     build:
       context: .
       dockerfile: Dockerfile
       target: bolt-ai-production
-    # Coolify-specific optimizations
     labels:
-      - coolify.deploy=true  # Explicitly marks this as the deployable service
+      - coolify.deploy=true
     deploy:
-      mode: replicated  # Ensures Coolify recognizes it as deployable
+      mode: replicated
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      PORT: "5173"
+      GROQ_API_KEY: "$GROQ_API_KEY"
+      # ... (other environment variables)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: pnpm run dockerstart
+    # profiles: []  # ← REMOVED (or use profiles: ["production"] if needed)
 
-  # Other services (app-dev, app-prebuild) can keep their profiles
   app-dev:
-    profiles: ["development"]
-    # ... (rest of config)
+    image: bolt-ai:development
+    build:
+      target: bolt-ai-development
+    profiles: ["development"]  # ← Proper array format
+    # ... (rest of app-dev config)
 
   app-prebuild:
-    profiles: ["prebuilt"] 
-    # ... (rest of config)
+    image: ghcr.io/stackblitz-labs/bolt.diy:latest
+    profiles: ["prebuilt"]  # ← Proper array format
+    # ... (rest of app-prebuild config)
     environment:
       NODE_ENV: production
       NODE_OPTIONS: "--max-old-space-size=4096" # Critical for exit code 134
