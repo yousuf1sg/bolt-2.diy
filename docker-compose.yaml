@@ -1,6 +1,6 @@
 services:
   app-prod:
-    image: ghcr.io/your-github-username/bolt-ai:production # Must use full registry path
+    image: ghcr.io/yousuf1sg/bolt-2.diy:production# Must use full registry path
     build:
       context: .
       dockerfile: Dockerfile
