@@ -8,7 +8,6 @@ services:
     # Coolify-specific optimizations
     labels:
       - coolify.deploy=true  # Explicitly marks this as the deployable service
-    profiles: []  # Removes profile restrictions
     deploy:
       mode: replicated  # Ensures Coolify recognizes it as deployable
 
