@@ -31,6 +31,8 @@ export default defineConfig((config) => {
         '.railway.app',
         '.vercel.app',
         '.netlify.app',
+        'ek8kwc0osco8o8ssgoo88gow.app.ai2moro.com',
+        'app.ai2moro.com',
         // Allow any subdomain
         'all'
       ],
