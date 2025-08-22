@@ -14,7 +14,7 @@ services:
     environment:
       NODE_ENV: production
       NODE_OPTIONS: "--max-old-space-size=4096"
-      PORT: "5173"
+      PORT: "4000"
       GROQ_API_KEY: "$GROQ_API_KEY"
       HUGGINGFACE_API_KEY: "$HuggingFace_API_KEY"
       OPENAI_API_KEY: "$OPENAI_API_KEY"
@@ -94,10 +94,10 @@ services:
       - NODE_ENV=development
       - VITE_HMR_PROTOCOL=ws
       - VITE_HMR_HOST=0.0.0.0
-      - VITE_HMR_PORT=5173
+      - VITE_HMR_PORT=3000
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-      - PORT=5173
+      - PORT=3000
       - GROQ_API_KEY=${GROQ_API_KEY}
       - HuggingFace_API_KEY=${HuggingFace_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -115,6 +115,6 @@ services:
       - VITE_DISABLE_OPTIMIZE_DEPS=true
       - VITE_FORCE_OPTIMIZE_DEPS=false
     ports:
-      - '5173:5173'
-    command: pnpm run dev --host 0.0.0.0 --force
+      - '3000'
+    command: pnpm run dev --host 0.0.0.0 --force --port 3000
     profiles: ["coolify", "default"]
