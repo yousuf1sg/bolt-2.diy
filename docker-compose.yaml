@@ -1,4 +1,4 @@
-version: '3.8'  # Explicit version declaration (recommended)
+version: '3.8'
 
 services:
   app-prod:
@@ -29,48 +29,12 @@ services:
       VITE_LOG_LEVEL: "${VITE_LOG_LEVEL:-debug}"
       DEFAULT_NUM_CTX: "${DEFAULT_NUM_CTX:-32768}"
       RUNNING_IN_DOCKER: true
-      # ... (other environment variables)
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: pnpm run dockerstart
-    # profiles: []  # ← REMOVED (or use profiles: ["production"] if needed)
+    profiles: ["production"]
 
   app-dev:
-    image: bolt-ai:development
-    build:
-      target: bolt-ai-development
-    profiles: ["development"]  # ← Proper array format
-    # ... (rest of app-dev config)
-
-  app-prebuild:
-    image: ghcr.io/stackblitz-labs/bolt.diy:latest
-    profiles: ["prebuilt"]  # ← Proper array format
-    # ... (rest of app-prebuild config)
-    environment:
-      NODE_ENV: production
-      NODE_OPTIONS: "--max-old-space-size=4096" # Critical for exit code 134
-      PORT: "5173"
-      # Reference variables EXACTLY as defined in Coolify UI:
-      GROQ_API_KEY: "$GROQ_API_KEY" # No curly braces!
-      HUGGINGFACE_API_KEY: "$HuggingFace_API_KEY"
-      OPENAI_API_KEY: "$OPENAI_API_KEY"
-      ANTHROPIC_API_KEY: "$ANTHROPIC_API_KEY"
-      OPEN_ROUTER_API_KEY: "$OPEN_ROUTER_API_KEY"
-      GOOGLE_GENERATIVE_AI_API_KEY: "$GOOGLE_GENERATIVE_AI_API_KEY"
-      OLLAMA_API_BASE_URL: "$OLLAMA_API_BASE_URL"
-      XAI_API_KEY: "$XAI_API_KEY"
-      TOGETHER_API_KEY: "$TOGETHER_API_KEY"
-      TOGETHER_API_BASE_URL: "$TOGETHER_API_BASE_URL"
-      AWS_BEDROCK_CONFIG: "$AWS_BEDROCK_CONFIG"
-      VITE_LOG_LEVEL: "${VITE_LOG_LEVEL:-debug}"
-      DEFAULT_NUM_CTX: "${DEFAULT_NUM_CTX:-32768}"
-      RUNNING_IN_DOCKER: true
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    command: pnpm run dockerstart
-  profiles: ["production"]
-
-app-dev:
     image: bolt-ai:development
     build:
       target: bolt-ai-development
@@ -97,6 +61,8 @@ app-dev:
       - VITE_LOG_LEVEL=${VITE_LOG_LEVEL:-debug}
       - DEFAULT_NUM_CTX=${DEFAULT_NUM_CTX:-32768}
       - RUNNING_IN_DOCKER=true
+      - VITE_DISABLE_OPTIMIZE_DEPS=true
+      - VITE_FORCE_OPTIMIZE_DEPS=false
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
@@ -107,17 +73,16 @@ app-dev:
       - /app/node_modules
     ports:
       - '5173:5173'
-    command: pnpm run dev --host 0.0.0.0
+    command: pnpm run dev --host 0.0.0.0 --force
     profiles: ['development', 'default']
 
-app-prebuild:
+  app-prebuild:
     image: ghcr.io/stackblitz-labs/bolt.diy:latest
     ports:
       - '5173:5173'
     environment:
       - NODE_ENV=production
       - COMPOSE_PROFILES=production
-      # No strictly needed but serving as hints for Coolify
       - PORT=5173
       - OLLAMA_API_BASE_URL=http://127.0.0.1:11434
       - DEFAULT_NUM_CTX=${DEFAULT_NUM_CTX:-32768}
@@ -126,3 +91,4 @@ app-prebuild:
       - 'host.docker.internal:host-gateway'
     command: pnpm run dockerstart
     profiles: ["prebuilt"]
+
