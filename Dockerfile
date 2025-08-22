@@ -64,7 +64,7 @@ FROM base AS bolt-ai-development
 
 # Define the same environment variables for development
 ARG GROQ_API_KEY
-ARG HuggingFace 
+ARG HuggingFace_API_KEY
 ARG OPENAI_API_KEY
 ARG ANTHROPIC_API_KEY
 ARG OPEN_ROUTER_API_KEY
@@ -73,6 +73,7 @@ ARG OLLAMA_API_BASE_URL
 ARG XAI_API_KEY
 ARG TOGETHER_API_KEY
 ARG TOGETHER_API_BASE_URL
+ARG AWS_BEDROCK_CONFIG
 ARG VITE_LOG_LEVEL=debug
 ARG DEFAULT_NUM_CTX
 
@@ -91,5 +92,6 @@ ENV GROQ_API_KEY=${GROQ_API_KEY} \
     DEFAULT_NUM_CTX=${DEFAULT_NUM_CTX}\
     RUNNING_IN_DOCKER=true
 
-RUN mkdir -p ${WORKDIR}/run
-CMD pnpm run dev --host
+# For development, we don't build - we run the dev server directly
+# The source code is already copied in the base stage
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]
