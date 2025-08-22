@@ -3,6 +3,11 @@ FROM ${BASE} AS base
 
 WORKDIR /app
 
+# Add build arguments for cache busting
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+
 # Install dependencies (this step is cached as long as the dependencies don't change)
 COPY package.json pnpm-lock.yaml ./
 # Install pnpm globally (inside the container)
@@ -11,8 +16,15 @@ RUN npm install -g pnpm
 # Rest of your Dockerfile...
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
+
 # Copy the rest of your app's source code
+# Add cache busting by copying package.json first, then everything else
 COPY . .
+
+# Add a timestamp to force rebuilds
+RUN echo "Build date: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}" > /app/build-info.txt
+RUN echo "Git commit: ${VCS_REF:-unknown}" >> /app/build-info.txt
+RUN echo "Version: ${VERSION:-dev}" >> /app/build-info.txt
 
 # Expose the port the app runs on
 EXPOSE 5173
