@@ -16,6 +16,29 @@ export default defineConfig((config) => {
     build: {
       target: 'esnext',
     },
+    server: {
+      // Allow external hosts for Coolify deployment
+      host: '0.0.0.0',
+      port: 3000,
+      allowedHosts: [
+        'localhost',
+        '127.0.0.1',
+        '0.0.0.0',
+        '*',
+        // Allow Coolify domains
+        '.ai2moro.com',
+        '.coolify.app',
+        '.railway.app',
+        '.vercel.app',
+        '.netlify.app',
+        // Allow any subdomain
+        'all'
+      ],
+      hmr: {
+        host: '0.0.0.0',
+        port: 3000,
+      },
+    },
     plugins: [
       nodePolyfills({
         include: ['buffer', 'process', 'util', 'stream'],
